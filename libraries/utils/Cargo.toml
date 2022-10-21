@@ -1,5 +1,5 @@
 [package]
-name = "cycles_dispenser"
+name = "utils"
 version = "0.1.0"
 edition = "2021"
 
@@ -7,6 +7,6 @@ edition = "2021"
 
 [dependencies]
 candid = { workspace = true }
-candid_gen = { path = "../../libraries/candid_gen" }
-serde = { workspace = true }
-types = { path = "../../libraries/types" }
+ic-cdk = { workspace = true }
+rand = { workspace = true }
+types = { path = "../types" }

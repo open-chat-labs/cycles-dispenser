@@ -11,5 +11,12 @@ crate-type = ["cdylib"]
 
 [dependencies]
 candid = { workspace = true }
+canister_state_macros = { workspace = true }
+canister_tracing_macros = { workspace = true }
 cycles_dispenser = { path = "../api" }
+ic-cdk = { workspace = true }
+ic-cdk-macros = { workspace = true }
 serde = { workspace = true }
+tracing = { workspace = true }
+types = { path = "../../libraries/types" }
+utils = { path = "../../libraries/utils" }

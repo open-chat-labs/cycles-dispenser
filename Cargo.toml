@@ -1,16 +1,24 @@
 [workspace]
 members = [
     "canister/api",
-    "canister/impl"
+    "canister/impl",
+    "libraries/candid_gen",
+    "libraries/types",
+    "libraries/utils"
 ]
 
 [workspace.dependencies]
 candid = "0.8.3"
-candid_gen = { git = "https://github.com/open-ic/open-chat", branch = "master" }
 canister_state_macros = { git = "https://github.com/open-ic/ic-utils", rev = "b06d3b984e39fa3a23828521934ef0370b720b18" }
+canister_tracing_macros = { git = "https://github.com/open-ic/open-chat", branch = "master" }
 ic-cdk = "0.6.1"
 ic-cdk-macros = "0.6.1"
+quote = "1.0.21"
+rand = "0.8.5"
 serde = "1.0.145"
+serde_bytes = "0.11.7"
+syn = "1.0.103"
+tracing = "0.1.37"
 
 [profile.release]
 lto = true

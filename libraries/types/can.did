@@ -1,0 +1,1043 @@
+type AccountIdentifier = blob;
+type BlockIndex = nat64;
+type CanisterId = principal;
+type ChatId = CanisterId;
+type Cycles = nat;
+type EventIndex = nat32;
+type Tokens = record { e8s: nat64; };
+type ICP = Tokens;
+type Memo = nat64;
+type MessageId = nat;
+type MessageIndex = nat32;
+type Milliseconds = nat64;
+type NnsNeuronId = nat64;
+type ProposalId = nat64;
+type SnsNeuronId = blob;
+type TimestampMillis = nat64;
+type TimestampNanos = nat64;
+type TransactionHash = blob;
+type UserId = CanisterId;
+
+type AddedToGroupNotification =
+    record {
+        chat_id: ChatId;
+        group_name: text;
+        added_by: UserId;
+        added_by_name: text;
+        timestamp: TimestampMillis;
+    };
+
+type AudioContent =
+    record {
+        caption: opt text;
+        mime_type: text;
+        blob_reference: opt BlobReference;
+    };
+
+type Avatar =
+    record {
+        id: nat;
+        mime_type: text;
+        data: blob;
+    };
+
+type BlobReference =
+    record {
+        canister_id: CanisterId;
+        blob_id: nat;
+    };
+
+type CanisterUpgradeStatus =
+    variant {
+        InProgress;
+        NotRequired;
+    };
+
+type CanisterWasm =
+    record {
+        module: vec nat8;
+        version: Version;
+        compressed: bool;
+    };
+
+type ChatMetrics =
+    record {
+        text_messages: nat64;
+        image_messages: nat64;
+        video_messages: nat64;
+        audio_messages: nat64;
+        file_messages: nat64;
+        polls: nat64;
+        poll_votes: nat64;
+        cycles_messages: nat64;
+        icp_messages: nat64;
+        deleted_messages: nat64;
+        giphy_messages: nat64;
+        replies: nat64;
+        edits: nat64;
+        reactions: nat64;
+        proposals: nat64;
+        last_active: TimestampMillis;
+    };
+
+type ChatSummary =
+    variant {
+        Direct: DirectChatSummary;
+        Group: GroupChatSummary;
+    };
+
+type ChatSummaryUpdates =
+    variant {
+        Direct: DirectChatSummaryUpdates;
+        Group: GroupChatSummaryUpdates;
+    };
+
+type ConfirmationCodeSms =
+    record {
+         phone_number: text;
+         confirmation_code: text;
+    };
+
+type CryptoContent =
+    record {
+        recipient: UserId;
+        transfer: CryptoTransaction;
+        caption: opt text;
+    };
+
+type DeletedContent =
+    record {
+        deleted_by: UserId;
+        timestamp: TimestampMillis;
+    };
+
+type DirectChatCreated =
+    record {
+    };
+
+type DirectChatEventWrapper =
+    record {
+        index: EventIndex;
+        timestamp: TimestampMillis;
+        correlation_id: nat64;
+        event: ChatEvent;
+    };
+
+type DirectChatSummary =
+    record {
+        them: UserId;
+        latest_message: MessageEventWrapper;
+        latest_event_index: EventIndex;
+        date_created: TimestampMillis;
+        read_by_me_up_to: opt MessageIndex;
+        read_by_them_up_to: opt MessageIndex;
+        notifications_muted: bool;
+        metrics: ChatMetrics;
+        my_metrics: ChatMetrics;
+        archived: bool;
+    };
+
+type DirectChatSummaryUpdates =
+    record {
+        chat_id: ChatId;
+        latest_message: opt MessageEventWrapper;
+        latest_event_index: opt EventIndex;
+        read_by_me_up_to: opt MessageIndex;
+        read_by_them_up_to: opt MessageIndex;
+        notifications_muted: opt bool;
+        affected_events: vec EventIndex;
+        metrics: opt ChatMetrics;
+        my_metrics: opt ChatMetrics;
+        archived: opt bool;
+    };
+
+type DirectMessageNotification =
+    record {
+        sender: UserId;
+        thread_root_message_index: opt MessageIndex;
+        sender_name: text;
+        message: MessageEventWrapper;
+    };
+
+type DirectReactionAddedNotification =
+    record {
+        them: UserId;
+        username: text;
+        message: MessageEventWrapper;
+        reaction: text;
+        timestamp: TimestampMillis;
+    };
+
+type FieldTooShortResult =
+    record {
+        length_provided: nat32;
+        min_length: nat32;
+    };
+
+type FieldTooLongResult =
+    record {
+        length_provided: nat32;
+        max_length: nat32;
+    };
+
+type FileContent =
+    record {
+        name: text;
+        caption: opt text;
+        mime_type: text;
+        file_size: nat32;
+        blob_reference: opt BlobReference;
+    };
+
+type GroupChatCreated =
+    record {
+        name: text;
+        description: text;
+        created_by: UserId;
+    };
+
+type ChatEvent =
+    variant {
+        Message: Message;
+        GroupChatCreated: GroupChatCreated;
+        DirectChatCreated: DirectChatCreated;
+        GroupNameChanged: GroupNameChanged;
+        GroupDescriptionChanged: GroupDescriptionChanged;
+        AvatarChanged: AvatarChanged;
+        OwnershipTransferred: OwnershipTransferred;
+        ParticipantsAdded: ParticipantsAdded;
+        ParticipantsRemoved: ParticipantsRemoved;
+        ParticipantJoined: ParticipantJoined;
+        ParticipantLeft: ParticipantLeft;
+        ParticipantAssumesSuperAdmin: ParticipantAssumesSuperAdmin;
+        ParticipantDismissedAsSuperAdmin: ParticipantDismissedAsSuperAdmin;
+        ParticipantRelinquishesSuperAdmin: ParticipantRelinquishesSuperAdmin;
+        RoleChanged: RoleChanged;
+        MessageEdited: UpdatedMessage;
+        MessageDeleted: UpdatedMessage;
+        MessageReactionAdded: UpdatedMessage;
+        MessageReactionRemoved: UpdatedMessage;
+        UsersBlocked: UsersBlocked;
+        UsersUnblocked: UsersUnblocked;
+        MessagePinned: MessagePinned;
+        MessageUnpinned: MessageUnpinned;
+        PollVoteRegistered: UpdatedMessage;
+        PollVoteDeleted: UpdatedMessage;
+        PollEnded: PollEnded;
+        PermissionsChanged: PermissionsChanged;
+        GroupVisibilityChanged: GroupVisibilityChanged;
+        GroupInviteCodeChanged: GroupInviteCodeChanged;
+        ThreadUpdated: ThreadUpdated;
+        ProposalsUpdated: ProposalsUpdated;
+        GroupRulesChanged: GroupRulesChanged;
+    };
+
+type ChatEventWrapper =
+    record {
+        index: EventIndex;
+        timestamp: TimestampMillis;
+        correlation_id: nat64;
+        event: ChatEvent;
+    };
+
+type GroupChatSummary =
+    record {
+        chat_id: ChatId;
+        last_updated: TimestampMillis;
+        name: text;
+        description: text;
+        subtype: opt GroupSubtype;
+        avatar_id: opt nat;
+        is_public: bool;
+        history_visible_to_new_joiners: bool;
+        min_visible_event_index: EventIndex;
+        min_visible_message_index: MessageIndex;
+        latest_message: opt MessageEventWrapper;
+        latest_event_index: EventIndex;
+        joined: TimestampMillis;
+        read_by_me_up_to: opt MessageIndex;
+        notifications_muted: bool;
+        participant_count: nat32;
+        role: Role;
+        mentions: vec Mention;
+        wasm_version: Version;
+        owner_id: UserId;
+        permissions: GroupPermissions;
+        metrics: ChatMetrics;
+        my_metrics: ChatMetrics;
+        latest_threads: vec ThreadSyncDetails;
+        archived: bool;
+    };
+
+type GroupChatSummaryUpdates =
+    record {
+        chat_id: ChatId;
+        last_updated: TimestampMillis;
+        name: opt text;
+        description: opt text;
+        subtype: GroupSubtypeUpdate;
+        avatar_id: AvatarIdUpdate;
+        latest_message: opt MessageEventWrapper;
+        latest_event_index: opt EventIndex;
+        read_by_me_up_to: opt MessageIndex;
+        notifications_muted: opt bool;
+        participant_count: opt nat32;
+        role: opt Role;
+        mentions: vec Mention;
+        wasm_version: opt Version;
+        owner_id: opt UserId;
+        permissions: opt GroupPermissions;
+        affected_events: vec EventIndex;
+        metrics: opt ChatMetrics;
+        my_metrics: opt ChatMetrics;
+        is_public: opt bool;
+        latest_threads: vec ThreadSyncDetails;
+        archived: opt bool;
+    };
+
+type GroupDescriptionChanged =
+    record {
+        new_description: text;
+        previous_description: text;
+        changed_by: UserId;
+    };
+
+type AvatarChanged =
+    record {
+        new_avatar: opt nat;
+        previous_avatar: opt nat;
+        changed_by: UserId;
+    };
+
+type AvatarUpdate =
+    variant {
+        NoChange;
+        SetToNone;
+        SetToSome: Avatar;
+    };
+
+type AvatarIdUpdate =
+    variant {
+        NoChange;
+        SetToNone;
+        SetToSome: nat;
+    };
+
+type Mention =
+    record {
+        thread_root_message_index: opt MessageIndex;
+        message_id: MessageId;
+        message_index: MessageIndex;
+        event_index: EventIndex;
+        mentioned_by: UserId;
+    };
+
+type Message =
+    record {
+        message_index: MessageIndex;
+        message_id: MessageId;
+        sender: UserId;
+        content: MessageContent;
+        replies_to: opt ReplyContext;
+        reactions: vec record { text; vec UserId; };
+        thread_summary: opt ThreadSummary;
+        edited: bool;
+        forwarded: bool;
+        last_updated: opt TimestampMillis;
+    };
+
+type MessageEventWrapper =
+    record {
+        index: EventIndex;
+        timestamp: TimestampMillis;
+        correlation_id: nat64;
+        event: Message;
+    };
+
+type GroupMessageNotification =
+    record {
+        chat_id: ChatId;
+        thread_root_message_index: opt MessageIndex;
+        group_name: text;
+        sender: UserId;
+        sender_name: text;
+        message: MessageEventWrapper;
+        mentioned: vec User;
+        hide: bool;
+    };
+
+type GroupNameChanged =
+    record {
+        new_name: text;
+        previous_name: text;
+        changed_by: UserId;
+    };
+
+type GroupReactionAddedNotification =
+    record {
+        chat_id: ChatId;
+        thread_root_message_index: opt MessageIndex;
+        group_name: text;
+        added_by: UserId;
+        added_by_name: text;
+        message: MessageEventWrapper;
+        reaction: text;
+        timestamp: TimestampMillis;
+    };
+
+type GroupReplyContext =
+    record {
+        event_index: EventIndex;
+    };
+
+type GroupSubtype =
+    variant {
+        GovernanceProposals: GovernanceProposalsSubtype;
+    };
+
+type GroupSubtypeUpdate =
+    variant {
+        NoChange;
+        SetToNone;
+        SetToSome: GroupSubtype;
+    };
+
+type GovernanceProposalsSubtype =
+    record {
+        is_nns: bool;
+        governance_canister_id: CanisterId;
+    };
+
+type MessagePinned =
+    record {
+        message_index: MessageIndex;
+        pinned_by: UserId;
+    };
+
+type MessageUnpinned =
+    record {
+        message_index: MessageIndex;
+        unpinned_by: UserId;
+        due_to_message_deleted: bool;
+    };
+
+type PinnedMessageUpdate =
+    variant {
+        NoChange;
+        SetToNone;
+        SetToSome: MessageIndex;
+    };
+
+type PublicGroupSummary =
+    record {
+        chat_id: ChatId;
+        last_updated: TimestampMillis;
+        name: text;
+        description: text;
+        subtype: opt GroupSubtype;
+        avatar_id: opt nat;
+        latest_message: opt MessageEventWrapper;
+        latest_event_index: EventIndex;
+        participant_count: nat32;
+        wasm_version: Version;
+        owner_id: UserId;
+        is_public: bool;
+    };
+
+type ReplyContext =
+    record {
+        chat_id_if_other: opt ChatId;
+        event_index: EventIndex;
+    };
+
+type GiphyImageVariant =
+    record {
+        width: nat32;
+        height: nat32;
+        url: text;
+        mime_type: text;
+    };
+
+type GiphyContent =
+    record {
+        caption: opt text;
+        title: text;
+        desktop: GiphyImageVariant;
+        mobile: GiphyImageVariant;
+    };
+
+type ImageContent =
+    record {
+        width: nat32;
+        height: nat32;
+        thumbnail_data: text;
+        caption: opt text;
+        mime_type: text;
+        blob_reference: opt BlobReference;
+    };
+
+type IndexedNotification =
+    record {
+        index: nat64;
+        value: NotificationEnvelope;
+    };
+
+type InvalidPollReason =
+    variant {
+        TooFewOptions: nat32;
+        TooManyOptions: nat32;
+        OptionTooLong: nat32;
+        DuplicateOptions;
+        EndDateInThePast;
+        PollsNotValidForDirectChats;
+    };
+
+type MessageContent =
+    variant {
+        Text: TextContent;
+        Image: ImageContent;
+        Video: VideoContent;
+        Audio: AudioContent;
+        File: FileContent;
+        Poll: PollContent;
+        Crypto: CryptoContent;
+        Deleted: DeletedContent;
+        Giphy: GiphyContent;
+        GovernanceProposal: ProposalContent;
+    };
+
+type UpdatedMessage =
+    record {
+        updated_by: UserId;
+        event_index: EventIndex;
+        message_id: MessageId;
+    };
+
+type MessageMatch =
+    record {
+        chat_id: ChatId;
+        message_index: MessageIndex;
+        content: MessageContent;
+        sender: UserId;
+        score: nat32;
+    };
+
+type Notification =
+    variant {
+        AddedToGroupNotification: AddedToGroupNotification;
+        DirectMessageNotification: DirectMessageNotification;
+        GroupMessageNotification: GroupMessageNotification;
+        DirectReactionAddedNotification: DirectReactionAddedNotification;
+        GroupReactionAddedNotification: GroupReactionAddedNotification;
+    };
+
+type NotificationEnvelope =
+    record {
+        recipients: vec UserId;
+        notification: Notification;
+    };
+
+type PartialUserSummary =
+    record {
+        user_id: UserId;
+        username: opt text;
+        seconds_since_last_online: nat32;
+        avatar_id: opt nat;
+        is_bot: bool;
+    };
+
+type Participant =
+    record {
+        user_id: UserId;
+        date_added: TimestampMillis;
+        role: Role;
+    };
+
+type ParticipantJoined =
+    record {
+        user_id: UserId;
+        as_super_admin: bool;
+    };
+
+type ParticipantLeft =
+    record {
+        user_id: UserId;
+    };
+
+type ParticipantAssumesSuperAdmin =
+    record {
+        user_id: UserId;
+    };
+
+type ParticipantRelinquishesSuperAdmin =
+    record {
+        user_id: UserId;
+    };
+
+type ParticipantDismissedAsSuperAdmin =
+    record {
+        user_id: UserId;
+    };
+
+type ParticipantsAdded =
+    record {
+        user_ids: vec UserId;
+        added_by: UserId;
+        unblocked: vec UserId;
+    };
+
+type PermissionsChanged =
+    record {
+        old_permissions: GroupPermissions;
+        new_permissions: GroupPermissions;
+        changed_by: UserId;
+    };
+
+type GroupVisibilityChanged =
+    record {
+        now_public: bool;
+        changed_by: UserId;
+    };
+
+type GroupInviteCodeChanged =
+    record {
+        change: GroupInviteCodeChange;
+        changed_by: UserId;
+    };
+
+type GroupInviteCodeChange =
+    variant {
+        Enabled;
+        Disabled;
+        Reset;
+    };
+
+type PollConfig =
+    record {
+        text: opt text;
+        options: vec text;
+        end_date: opt TimestampMillis;
+        anonymous: bool;
+        show_votes_before_end_date: bool;
+        allow_multiple_votes_per_user: bool;
+    };
+
+type PollContent =
+    record {
+        config: PollConfig;
+        votes: PollVotes;
+        ended: bool;
+    };
+
+type PollEnded =
+    record {
+        event_index: EventIndex;
+        message_index: MessageIndex;
+    };
+
+type PollVotes =
+    record {
+        total: TotalPollVotes;
+        user: vec nat32;
+    };
+
+type RoleChanged =
+    record {
+        user_ids: vec UserId;
+        changed_by: UserId;
+        old_role: Role;
+        new_role: Role;
+    };
+
+type OwnershipTransferred =
+    record {
+        old_owner: UserId;
+        new_owner: UserId;
+    };
+
+type ParticipantsRemoved =
+    record {
+        user_ids: vec UserId;
+        removed_by: UserId;
+    };
+
+type ProposalContent =
+    record {
+        governance_canister_id: CanisterId;
+        proposal: Proposal;
+        my_vote: opt bool;
+    };
+
+type Proposal =
+    variant {
+        NNS: NnsProposal;
+        SNS: SnsProposal;
+    };
+
+type NnsProposal =
+    record {
+        id: ProposalId;
+        topic: int32;
+        proposer: NnsNeuronId;
+        created: TimestampMillis;
+        title: text;
+        summary: text;
+        url: text;
+        status: ProposalDecisionStatus;
+        reward_status: ProposalRewardStatus;
+        tally: Tally;
+        deadline: TimestampMillis;
+        last_updated: TimestampMillis;
+    };
+
+type SnsProposal =
+    record {
+        id: ProposalId;
+        action: nat64;
+        proposer: SnsNeuronId;
+        created: TimestampMillis;
+        title: text;
+        summary: text;
+        url: text;
+        status: ProposalDecisionStatus;
+        reward_status: ProposalRewardStatus;
+        tally: Tally;
+        deadline: TimestampMillis;
+        last_updated: TimestampMillis;
+    };
+
+type ProposalDecisionStatus =
+    variant {
+        Unspecified;
+        Open;
+        Rejected;
+        Adopted;
+        Executed;
+        Failed;
+    };
+
+type ProposalRewardStatus =
+    variant {
+        Unspecified;
+        AcceptVotes;
+        ReadyToSettle;
+        Settled;
+    };
+
+type Tally =
+    record {
+        yes: nat64;
+        no: nat64;
+        total: nat64;
+    };
+
+type TotalPollVotes =
+    variant {
+        Visible: vec record { nat32; vec UserId };
+        Anonymous: vec record { nat32; nat32 };
+        Hidden: nat32;
+    };
+
+type UsersBlocked =
+    record {
+        user_ids: vec UserId;
+        blocked_by: UserId;
+    };
+
+type UsersUnblocked =
+    record {
+        user_ids: vec UserId;
+        unblocked_by: UserId;
+    };
+
+type VoteOperation =
+    variant {
+        RegisterVote;
+        DeleteVote;
+    };
+
+type RegistrationFee =
+    variant {
+        ICP: ICPRegistrationFee;
+        Cycles: CyclesRegistrationFee;
+    };
+
+type ICPRegistrationFee =
+    record {
+        amount: ICP;
+        recipient: AccountIdentifier;
+        valid_until: TimestampMillis;
+    };
+
+type CyclesRegistrationFee =
+    record {
+        amount: Cycles;
+        recipient: principal;
+        valid_until: TimestampMillis;
+    };
+
+type Role =
+    variant {
+        SuperAdmin: FallbackRole;
+        Owner;
+        Admin;
+        Participant;
+    };
+
+type FallbackRole =
+    variant {
+        Admin;
+        Participant;
+    };
+
+type Subscription =
+    record {
+        value: SubscriptionInfo;
+        last_active: TimestampMillis;
+    };
+
+type SubscriptionInfo =
+    record {
+        endpoint: text;
+        keys: SubscriptionKeys;
+    };
+
+type SubscriptionKeys =
+    record {
+        p256dh: text;
+        auth: text;
+    };
+
+type TextContent =
+    record {
+        text: text;
+    };
+
+type UserSummary =
+    record {
+        user_id: UserId;
+        username: text;
+        seconds_since_last_online: nat32;
+        avatar_id: opt nat;
+        is_bot: bool;
+    };
+
+type Version =
+    record {
+        major: nat32;
+        minor: nat32;
+        patch: nat32;
+    };
+
+type Cryptocurrency =
+    variant {
+        InternetComputer;
+    };
+
+type CryptoTransaction =
+    variant {
+        Pending: PendingCryptoTransaction;
+        Completed: CompletedCryptoTransaction;
+        Failed: FailedCryptoTransaction;
+    };
+
+type PendingCryptoTransaction =
+    variant {
+        NNS: NnsPendingCryptoTransaction;
+        SNS: SnsPendingCryptoTransaction;
+    };
+
+type CompletedCryptoTransaction =
+    variant {
+        NNS: NnsCompletedCryptoTransaction;
+        SNS: SnsCompletedCryptoTransaction;
+    };
+
+type FailedCryptoTransaction =
+    variant {
+        NNS: NnsFailedCryptoTransaction;
+        SNS: SnsFailedCryptoTransaction;
+    };
+
+type NnsPendingCryptoTransaction =
+    record {
+        token: Cryptocurrency;
+        amount: Tokens;
+        to: NnsUserOrAccount;
+        fee: opt Tokens;
+        memo: opt Memo;
+    };
+
+type NnsCompletedCryptoTransaction =
+    record {
+        token: Cryptocurrency;
+        amount: Tokens;
+        fee: Tokens;
+        from: NnsCryptoAccount;
+        to: NnsCryptoAccount;
+        memo: Memo;
+        created: TimestampMillis;
+        transaction_hash: TransactionHash;
+        block_index: BlockIndex;
+    };
+
+type NnsFailedCryptoTransaction =
+    record {
+        token: Cryptocurrency;
+        amount: Tokens;
+        fee: Tokens;
+        from: NnsCryptoAccount;
+        to: NnsCryptoAccount;
+        memo: Memo;
+        created: TimestampMillis;
+        transaction_hash: TransactionHash;
+        error_message: text;
+    };
+
+type NnsUserOrAccount =
+    variant {
+        User: UserId;
+        Account: AccountIdentifier;
+    };
+
+type NnsCryptoAccount =
+    variant {
+        Mint;
+        Account: AccountIdentifier;
+    };
+
+type SnsPendingCryptoTransaction =
+    record {
+        token: Cryptocurrency;
+        amount: Tokens;
+        to: Icrc1Account;
+        fee: Tokens;
+        memo: opt Memo;
+    };
+
+type SnsCompletedCryptoTransaction =
+    record {
+        token: Cryptocurrency;
+        amount: Tokens;
+        fee: Tokens;
+        from: SnsAccount;
+        to: SnsAccount;
+        memo: opt Memo;
+        created: TimestampMillis;
+        transaction_hash: TransactionHash;
+        block_index: BlockIndex;
+    };
+
+type SnsFailedCryptoTransaction =
+    record {
+        token: Cryptocurrency;
+        amount: Tokens;
+        fee: Tokens;
+        from: SnsAccount;
+        to: SnsAccount;
+        memo: opt Memo;
+        created: TimestampMillis;
+        transaction_hash: TransactionHash;
+        error_message: text;
+    };
+
+type SnsAccount =
+    variant {
+        Mint;
+        Account: Icrc1Account;
+    };
+
+type Icrc1Account =
+    record {
+        owner: principal;
+        subaccount: opt blob;
+    };
+
+type VideoContent =
+    record {
+        width: nat32;
+        height: nat32;
+        thumbnail_data: text;
+        caption: opt text;
+        mime_type: text;
+        image_blob_reference: opt BlobReference;
+        video_blob_reference: opt BlobReference;
+    };
+
+type User =
+    record {
+        user_id: UserId;
+        username: text;
+    };
+
+type GroupPermissions =
+    record {
+        change_permissions: PermissionRole;
+        change_roles: PermissionRole;
+        add_members: PermissionRole;
+        remove_members: PermissionRole;
+        block_users: PermissionRole;
+        delete_messages: PermissionRole;
+        update_group: PermissionRole;
+        pin_messages: PermissionRole;
+        invite_users: PermissionRole;
+        create_polls: PermissionRole;
+        send_messages: PermissionRole;
+        react_to_messages: PermissionRole;
+        reply_in_thread: PermissionRole;
+    };
+
+type PermissionRole =
+    variant {
+        Owner;
+        Admins;
+        Members;
+    };
+
+type ThreadSummary =
+    record {
+        participant_ids: vec UserId;
+        reply_count: nat32;
+        latest_event_index: EventIndex;
+        latest_event_timestamp: TimestampMillis;
+    };
+
+type ThreadUpdated =
+    record {
+        event_index: EventIndex;
+        message_index: MessageIndex;
+        latest_thread_message_index_if_updated: opt MessageIndex;
+    };
+
+type ThreadSyncDetails =
+    record {
+        root_message_index: MessageIndex;
+        latest_event: opt EventIndex;
+        latest_message: opt MessageIndex;
+        read_up_to: opt MessageIndex;
+        last_updated: TimestampMillis;
+    };
+
+type ProposalsUpdated =
+    record {
+        proposals: vec ProposalUpdated;
+    };
+
+type ProposalUpdated =
+    record {
+        event_index: EventIndex;
+        message_index: MessageIndex;
+    };
+
+type GroupRules =
+    record {
+        text: text;
+        enabled: bool;
+    };
+
+type GroupRulesChanged =
+    record {
+        enabled: bool;
+        prev_enabled: bool;
+        changed_by: UserId;
+    };

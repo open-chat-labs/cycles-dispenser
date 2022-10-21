@@ -1,2 +1,16 @@
+type Cycles = nat;
+type Milliseconds = nat64;
+
+type RequestCyclesResponse =
+    variant {
+        Success: Cycles;
+        TopUpInProgress;
+        Throttled: Milliseconds;
+        CyclesBalanceTooLow;
+        NotAuthorized;
+        InternalError: text;
+    };
+
 service: {
+    c2c_request_cycles: (record {}) -> (RequestCyclesResponse)
 }
