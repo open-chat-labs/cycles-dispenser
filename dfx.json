@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "canisters": {
+    "cycles_dispenser": {
+      "type": "rust",
+      "package": "cycles_dispenser",
+      "candid": "canister/api/can.did"
+    }
+  }
+}

@@ -1,0 +1,18 @@
+[workspace]
+members = [
+    "canister/api",
+    "canister/impl"
+]
+
+[workspace.dependencies]
+candid = "0.8.3"
+candid_gen = { git = "https://github.com/open-ic/open-chat", branch = "master" }
+canister_state_macros = { git = "https://github.com/open-ic/ic-utils", rev = "b06d3b984e39fa3a23828521934ef0370b720b18" }
+ic-cdk = "0.6.1"
+ic-cdk-macros = "0.6.1"
+serde = "1.0.145"
+
+[profile.release]
+lto = true
+opt-level = "z"
+codegen-units = 1
