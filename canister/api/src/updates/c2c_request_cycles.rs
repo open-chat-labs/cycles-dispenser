@@ -3,7 +3,9 @@ use serde::{Deserialize, Serialize};
 use types::{Cycles, Milliseconds};
 
 #[derive(CandidType, Serialize, Deserialize, Debug)]
-pub struct Args {}
+pub struct Args {
+    pub amount: Option<Cycles>,
+}
 
 #[derive(CandidType, Serialize, Deserialize, Debug)]
 pub enum Response {

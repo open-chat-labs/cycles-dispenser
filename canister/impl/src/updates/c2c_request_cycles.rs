@@ -4,17 +4,18 @@ use canister_tracing_macros::trace;
 use cycles_dispenser::c2c_request_cycles::{Response::*, *};
 use ic_cdk::api::call::CallResult;
 use ic_cdk_macros::update;
+use std::cmp::min;
 use std::convert::TryInto;
 use tracing::{error, info};
 use types::{CanisterId, Cycles, Milliseconds, TimestampMillis};
 
 #[update]
 #[trace]
-async fn c2c_request_cycles(_args: Args) -> Response {
+async fn c2c_request_cycles(args: Args) -> Response {
     let PrepareResult {
         canister_id,
         amount,
-    } = match mutate_state(prepare) {
+    } = match mutate_state(|state| prepare(args, state)) {
         Ok(c) => c,
         Err(response) => return response,
     };
@@ -34,9 +35,10 @@ struct PrepareResult {
     amount: Cycles,
 }
 
-fn prepare(state: &mut State) -> Result<PrepareResult, Response> {
+fn prepare(args: Args, state: &mut State) -> Result<PrepareResult, Response> {
     let canister_id: CanisterId = state.env.caller();
-    let has_enough_cycles = check_cycles_balance(state);
+    let max_amount = state.data.max_top_up_amount;
+    let amount = args.amount.map_or(max_amount, |c| min(c, max_amount));
 
     if let Some(canister) = state.data.canisters.get_mut(&canister_id) {
         if canister.top_up_in_progress() {
@@ -47,13 +49,13 @@ fn prepare(state: &mut State) -> Result<PrepareResult, Response> {
             state.env.now(),
         ) {
             Err(Throttled(interval))
-        } else if !has_enough_cycles {
+        } else if state.env.cycles_balance() < state.data.min_cycles_balance + amount {
             Err(CyclesBalanceTooLow)
         } else {
             canister.set_top_up_in_progress(true);
             Ok(PrepareResult {
                 canister_id,
-                amount: state.data.top_up_amount,
+                amount,
             })
         }
     } else {
@@ -109,8 +111,4 @@ fn calc_required_wait_period(
     now: TimestampMillis,
 ) -> Option<Milliseconds> {
     latest_top_up.and_then(|t| (t + min_interval).checked_sub(now))
-}
-
-fn check_cycles_balance(state: &State) -> bool {
-    state.env.cycles_balance() > state.data.min_cycles_balance + state.data.top_up_amount
 }

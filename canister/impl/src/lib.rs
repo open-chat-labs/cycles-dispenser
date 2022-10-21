@@ -38,7 +38,7 @@ impl State {
 struct Data {
     pub admins: HashSet<Principal>,
     pub canisters: Canisters,
-    pub top_up_amount: Cycles,
+    pub max_top_up_amount: Cycles,
     pub min_interval: Milliseconds,
     pub min_cycles_balance: Cycles,
 }
@@ -47,7 +47,7 @@ impl Data {
     pub fn new(
         admins: Vec<Principal>,
         canisters: Vec<CanisterId>,
-        top_up_amount: Cycles,
+        max_top_up_amount: Cycles,
         min_interval: Milliseconds,
         min_cycles_balance: Cycles,
         now: TimestampMillis,
@@ -55,7 +55,7 @@ impl Data {
         Data {
             admins: admins.into_iter().collect(),
             canisters: Canisters::new(canisters, now),
-            top_up_amount,
+            max_top_up_amount,
             min_interval,
             min_cycles_balance,
         }

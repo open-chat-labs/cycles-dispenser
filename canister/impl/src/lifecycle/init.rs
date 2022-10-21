@@ -15,7 +15,7 @@ fn init(args: Args) {
     let data = Data::new(
         args.admins,
         args.canisters,
-        args.top_up_amount,
+        args.max_top_up_amount,
         args.min_interval,
         args.min_cycles_balance,
         env.now(),

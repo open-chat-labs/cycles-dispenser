@@ -2,6 +2,11 @@ type CanisterId = principal;
 type Cycles = nat;
 type Milliseconds = nat64;
 
+type RequestCyclesArgs =
+    record {
+        amount: opt Cycles;
+    };
+
 type RequestCyclesResponse =
     variant {
         Success: Cycles;
@@ -16,11 +21,11 @@ type InitArgs =
     record {
         admins: vec principal;
         canisters: vec CanisterId;
-        top_up_amount: Cycles;
+        max_top_up_amount: Cycles;
         min_interval: Milliseconds;
         min_cycles_balance: Cycles;
     };
 
 service: (InitArgs) -> {
-    c2c_request_cycles: (record {}) -> (RequestCyclesResponse)
+    c2c_request_cycles: (RequestCyclesArgs) -> (RequestCyclesResponse)
 }
