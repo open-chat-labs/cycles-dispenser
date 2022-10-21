@@ -1,3 +1,4 @@
+type CanisterId = principal;
 type Cycles = nat;
 type Milliseconds = nat64;
 
@@ -11,6 +12,15 @@ type RequestCyclesResponse =
         InternalError: text;
     };
 
-service: {
+type InitArgs =
+    record {
+        admins: vec principal;
+        canisters: vec CanisterId;
+        top_up_amount: Cycles;
+        min_interval: Milliseconds;
+        min_cycles_balance: Cycles;
+    };
+
+service: (InitArgs) -> {
     c2c_request_cycles: (record {}) -> (RequestCyclesResponse)
 }
