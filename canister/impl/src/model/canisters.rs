@@ -29,6 +29,10 @@ impl Canisters {
     pub fn get_mut(&mut self, canister_id: &CanisterId) -> Option<&mut Canister> {
         self.canisters.get_mut(canister_id)
     }
+
+    pub fn iter(&self) -> impl Iterator<Item = (&CanisterId, &Canister)> {
+        self.canisters.iter()
+    }
 }
 
 #[derive(Serialize, Deserialize)]

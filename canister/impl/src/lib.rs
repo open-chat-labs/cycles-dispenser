@@ -30,6 +30,8 @@ impl State {
             memory_used: memory::used(),
             now: self.env.now(),
             cycles_balance: self.env.cycles_balance(),
+            admins: self.data.admins.iter().copied().collect(),
+            canisters: self.data.canisters.iter().map(|(c, _)| *c).collect(),
         }
     }
 }
@@ -67,4 +69,6 @@ pub struct Metrics {
     pub now: TimestampMillis,
     pub memory_used: u64,
     pub cycles_balance: Cycles,
+    pub admins: Vec<Principal>,
+    pub canisters: Vec<CanisterId>,
 }
