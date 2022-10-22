@@ -7,6 +7,7 @@ edition = "2021"
 
 [dependencies]
 candid = { workspace = true }
+getrandom = { workspace = true, features = ["custom"] }
 ic-cdk = { workspace = true }
 rand = { workspace = true }
 types = { path = "../types" }

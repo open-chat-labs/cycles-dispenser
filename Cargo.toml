@@ -11,6 +11,7 @@ members = [
 candid = "0.8.3"
 canister_state_macros = { git = "https://github.com/open-ic/ic-utils", rev = "b06d3b984e39fa3a23828521934ef0370b720b18" }
 canister_tracing_macros = { git = "https://github.com/open-ic/open-chat", branch = "master" }
+getrandom = "0.2.8"
 ic-cdk = "0.6.1"
 ic-cdk-macros = "0.6.1"
 quote = "1.0.21"

@@ -3,7 +3,7 @@
   "canisters": {
     "cycles_dispenser": {
       "type": "rust",
-      "package": "cycles_dispenser",
+      "package": "cycles_dispenser_impl",
       "candid": "canister/api/can.did"
     }
   }
