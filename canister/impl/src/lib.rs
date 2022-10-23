@@ -2,7 +2,6 @@ use crate::model::canisters::Canisters;
 use candid::{CandidType, Principal};
 use canister_state_macros::canister_state;
 use serde::{Deserialize, Serialize};
-use std::cell::RefCell;
 use std::collections::HashSet;
 use types::{CanisterId, Cycles, Milliseconds, TimestampMillis};
 use utils::env::Environment;
