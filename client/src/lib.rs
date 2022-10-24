@@ -42,6 +42,16 @@ pub fn run() {
     };
 }
 
+pub fn serialize_to_bytes() -> Vec<u8> {
+    read_state(|state| rmp_serde::to_vec_named(&state).unwrap())
+}
+
+pub fn init_from_bytes(bytes: &[u8]) {
+    let state = rmp_serde::from_slice(bytes).unwrap();
+
+    init_state(state);
+}
+
 fn is_due(now: TimestampMillis, state: &State) -> bool {
     state.next_due > now
 }
