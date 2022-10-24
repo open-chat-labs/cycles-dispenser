@@ -21,6 +21,7 @@ rmp-serde = "1.1.1"
 serde = "1.0.145"
 serde_bytes = "0.11.7"
 serde_json = "1.0.87"
+stable_memory = { git = "https://github.com/open-ic/ic-utils", rev = "d9c575fb4b91e1cfe80add0746eac389df33c8f7" }
 syn = "1.0.103"
 tracing = "0.1.37"
 

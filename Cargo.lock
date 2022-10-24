@@ -116,6 +116,33 @@ checksum = "14c189c53d098945499cdfa7ecc63567cf3886b3332b312a5b4585d8d3a6a610"
 
 [[package]]
 name = "candid"
+version = "0.7.18"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d510cc32b8b991acc955dd3d5e0cb6f404069d1dccd9203ee90f5865557c9165"
+dependencies = [
+ "anyhow",
+ "binread",
+ "byteorder",
+ "candid_derive 0.4.5",
+ "codespan-reporting",
+ "hex",
+ "ic-types",
+ "lalrpop",
+ "lalrpop-util",
+ "leb128",
+ "logos",
+ "num-bigint",
+ "num-traits",
+ "num_enum",
+ "paste",
+ "pretty",
+ "serde",
+ "serde_bytes",
+ "thiserror",
+]
+
+[[package]]
+name = "candid"
 version = "0.8.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0571f3777880555f86d8aaa63080162560a8bf183d7853e0cc561d9a75458bbd"
@@ -123,7 +150,7 @@ dependencies = [
  "anyhow",
  "binread",
  "byteorder",
- "candid_derive",
+ "candid_derive 0.5.0",
  "codespan-reporting",
  "crc32fast",
  "data-encoding",
@@ -141,6 +168,18 @@ dependencies = [
  "serde_bytes",
  "sha2",
  "thiserror",
+]
+
+[[package]]
+name = "candid_derive"
+version = "0.4.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2e02c03c4d547674a3f3f3109538fb49871fbe636216daa019f06a62faca9061"
+dependencies = [
+ "lazy_static",
+ "proc-macro2",
+ "quote",
+ "syn",
 ]
 
 [[package]]
@@ -232,7 +271,7 @@ dependencies = [
 name = "cycles_dispenser"
 version = "0.1.0"
 dependencies = [
- "candid",
+ "candid 0.8.3",
  "candid_gen",
  "serde",
  "types",
@@ -244,7 +283,7 @@ version = "0.1.0"
 dependencies = [
  "canister_state_macros",
  "cycles_dispenser",
- "ic-cdk",
+ "ic-cdk 0.6.1",
  "rmp-serde",
  "serde",
  "types",
@@ -255,15 +294,16 @@ dependencies = [
 name = "cycles_dispenser_impl"
 version = "0.1.0"
 dependencies = [
- "candid",
+ "candid 0.8.3",
  "canister_state_macros",
  "canister_tracing_macros",
  "cycles_dispenser",
- "ic-cdk",
+ "ic-cdk 0.6.1",
  "ic-cdk-macros",
  "serde",
  "serde_bytes",
  "serde_json",
+ "stable_memory",
  "tracing",
  "types",
  "utils",
@@ -383,11 +423,22 @@ checksum = "7f24254aa9a54b5c858eaee2f5bccdb46aaf0e486a595ed5fd8f86ba55232a70"
 
 [[package]]
 name = "ic-cdk"
+version = "0.5.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0554d77b453140eefcb8c8192a342927f8c48cfda911dfa3cd4561a919dbd32f"
+dependencies = [
+ "candid 0.7.18",
+ "cfg-if",
+ "serde",
+]
+
+[[package]]
+name = "ic-cdk"
 version = "0.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2ebcbfc8818378990e9a79ee61a2de5d372c97db24a0c27c5f47b08c93786250"
 dependencies = [
- "candid",
+ "candid 0.8.3",
  "cfg-if",
  "serde",
 ]
@@ -398,13 +449,28 @@ version = "0.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "feb7c9d8c91637e09b56c8c413b1892958cb15a6a5a1001870de658962bbf917"
 dependencies = [
- "candid",
- "ic-cdk",
+ "candid 0.8.3",
+ "ic-cdk 0.6.1",
  "proc-macro2",
  "quote",
  "serde",
  "serde_tokenstream",
  "syn",
+]
+
+[[package]]
+name = "ic-types"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "79a17269dff0ec6ca4c3d04e18fca97d018ff53d809e6d92348fc22f9588e1a5"
+dependencies = [
+ "crc32fast",
+ "data-encoding",
+ "hex",
+ "serde",
+ "serde_bytes",
+ "sha2",
+ "thiserror",
 ]
 
 [[package]]
@@ -887,6 +953,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a507befe795404456341dfab10cef66ead4c041f62b8b11bbb92bffe5d0953e0"
 
 [[package]]
+name = "stable_memory"
+version = "0.1.0"
+source = "git+https://github.com/open-ic/ic-utils?rev=d9c575fb4b91e1cfe80add0746eac389df33c8f7#d9c575fb4b91e1cfe80add0746eac389df33c8f7"
+dependencies = [
+ "ic-cdk 0.5.7",
+ "rmp-serde",
+ "serde",
+]
+
+[[package]]
 name = "string_cache"
 version = "0.8.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1016,7 +1092,7 @@ checksum = "dcf81ac59edc17cc8697ff311e8f5ef2d99fcbd9817b34cec66f90b6c3dfd987"
 name = "types"
 version = "0.1.0"
 dependencies = [
- "candid",
+ "candid 0.8.3",
  "serde",
  "serde_bytes",
 ]
@@ -1043,9 +1119,9 @@ checksum = "f962df74c8c05a667b5ee8bcf162993134c104e96440b663c8daa176dc772d8c"
 name = "utils"
 version = "0.1.0"
 dependencies = [
- "candid",
+ "candid 0.8.3",
  "getrandom",
- "ic-cdk",
+ "ic-cdk 0.6.1",
  "rand",
  "types",
 ]
