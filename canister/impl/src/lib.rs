@@ -1,4 +1,4 @@
-use crate::model::canisters::Canisters;
+use crate::model::canisters::{CanisterMetrics, Canisters};
 use candid::{CandidType, Principal};
 use canister_state_macros::canister_state;
 use serde::{Deserialize, Serialize};
@@ -30,7 +30,7 @@ impl State {
             now: self.env.now(),
             cycles_balance: self.env.cycles_balance(),
             admins: self.data.admins.iter().copied().collect(),
-            canisters: self.data.canisters.iter().map(|(c, _)| *c).collect(),
+            canisters: self.data.canisters.metrics(),
         }
     }
 }
@@ -69,5 +69,5 @@ pub struct Metrics {
     pub memory_used: u64,
     pub cycles_balance: Cycles,
     pub admins: Vec<Principal>,
-    pub canisters: Vec<CanisterId>,
+    pub canisters: Vec<CanisterMetrics>,
 }

@@ -1,3 +1,4 @@
+use candid::CandidType;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use types::{CanisterId, Cycles, TimestampMillis};
@@ -30,8 +31,15 @@ impl Canisters {
         self.canisters.get_mut(canister_id)
     }
 
-    pub fn iter(&self) -> impl Iterator<Item = (&CanisterId, &Canister)> {
-        self.canisters.iter()
+    pub fn metrics(&self) -> Vec<CanisterMetrics> {
+        self.canisters
+            .iter()
+            .map(|(id, c)| CanisterMetrics {
+                canister_id: *id,
+                added: c.added,
+                top_ups: c.top_ups.clone(),
+            })
+            .collect()
     }
 }
 
@@ -60,8 +68,15 @@ impl Canister {
     }
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(CandidType, Serialize, Deserialize, Clone, Debug)]
 struct CyclesTopUp {
     pub date: TimestampMillis,
     pub amount: Cycles,
+}
+
+#[derive(CandidType, Serialize, Deserialize, Debug)]
+pub struct CanisterMetrics {
+    canister_id: CanisterId,
+    added: TimestampMillis,
+    top_ups: Vec<CyclesTopUp>,
 }
