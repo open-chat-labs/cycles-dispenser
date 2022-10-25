@@ -70,11 +70,14 @@ fn run_internal(now: TimestampMillis, state: &mut State) -> Option<TopUpRequest>
             cycles_dispenser_canister_id: state.cycles_dispenser_canister_id,
         })
     } else {
-        state.recent_invocations.push_back(InvocationResult {
-            timestamp: now,
-            cycles_balance,
-            top_up_result: None,
-        });
+        push_invocation_result(
+            InvocationResult {
+                timestamp: now,
+                cycles_balance,
+                top_up_result: None,
+            },
+            state,
+        );
         None
     }
 }
@@ -117,12 +120,22 @@ async fn request_top_up(request: TopUpRequest) {
     });
 
     mutate_state(|state| {
-        state.recent_invocations.push_back(InvocationResult {
-            timestamp: request.timestamp,
-            cycles_balance: request.cycles_balance,
-            top_up_result: Some(top_up_result),
-        })
-    })
+        push_invocation_result(
+            InvocationResult {
+                timestamp: request.timestamp,
+                cycles_balance: request.cycles_balance,
+                top_up_result: Some(top_up_result),
+            },
+            state,
+        )
+    });
+}
+
+fn push_invocation_result(result: InvocationResult, state: &mut State) {
+    while state.recent_invocations.len() >= 50 {
+        state.recent_invocations.pop_front();
+    }
+    state.recent_invocations.push_back(result);
 }
 
 struct TopUpRequest {
