@@ -91,19 +91,29 @@ async fn request_top_up(request: TopUpRequest) {
     )
     .await;
 
-    let top_up_result = match response {
+    let top_up_result = match &response {
         Ok((result,)) => match result {
             cycles_dispenser::c2c_request_cycles::Response::Success(cycles) => {
                 info!(cycles, "Cycles topped up successfully");
-                Ok(cycles)
+                Ok(*cycles)
             }
-            error => Err(format!("{:?}", error)),
+            cycles_dispenser::c2c_request_cycles::Response::Throttled(interval) => {
+                let now = utils::time::now_millis();
+
+                mutate_state(|state| {
+                    // Add 10 seconds to avoid being throttled again due to time mismatches
+                    state.next_due = now + interval + 10000;
+                });
+
+                Err(())
+            }
+            _ => Err(()),
         },
-        Err(error) => Err(format!("{:?}", error)),
+        _ => Err(()),
     }
-    .map_err(|error| {
-        error!(error, "Cycles top up failed");
-        error
+    .map_err(|_| {
+        error!(?response, "Cycles top up failed");
+        format!("{:?}", response)
     });
 
     mutate_state(|state| {
