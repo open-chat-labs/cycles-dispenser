@@ -286,6 +286,7 @@ dependencies = [
  "ic-cdk 0.6.1",
  "rmp-serde",
  "serde",
+ "tracing",
  "types",
  "utils",
 ]

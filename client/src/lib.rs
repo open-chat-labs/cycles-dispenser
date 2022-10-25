@@ -2,6 +2,7 @@ use canister_state_macros::canister_state;
 use ic_cdk::api::call::CallResult;
 use serde::{Deserialize, Serialize};
 use std::collections::VecDeque;
+use tracing::{error, info};
 use types::{CanisterId, Cycles, Milliseconds, TimestampMillis};
 
 canister_state!(State);
@@ -78,6 +79,8 @@ fn run_internal(now: TimestampMillis, state: &mut State) -> Option<TopUpRequest>
 }
 
 async fn request_top_up(request: TopUpRequest) {
+    info!(?request, "Requesting cycles top up");
+
     let args = cycles_dispenser::c2c_request_cycles::Args { amount: None };
 
     let response: CallResult<(cycles_dispenser::c2c_request_cycles::Response,)> = ic_cdk::call(
@@ -89,11 +92,18 @@ async fn request_top_up(request: TopUpRequest) {
 
     let top_up_result = match response {
         Ok((result,)) => match result {
-            cycles_dispenser::c2c_request_cycles::Response::Success(cycles) => Ok(cycles),
+            cycles_dispenser::c2c_request_cycles::Response::Success(cycles) => {
+                info!(cycles, "Cycles topped up successfully");
+                Ok(cycles)
+            }
             error => Err(format!("{:?}", error)),
         },
         Err(error) => Err(format!("{:?}", error)),
-    };
+    }
+    .map_err(|error| {
+        error!(error, "Cycles top up failed");
+        error
+    });
 
     mutate_state(|state| {
         state.recent_invocations.push_back(InvocationResult {
@@ -104,6 +114,7 @@ async fn request_top_up(request: TopUpRequest) {
     })
 }
 
+#[derive(Debug)]
 struct TopUpRequest {
     timestamp: TimestampMillis,
     cycles_balance: Cycles,
