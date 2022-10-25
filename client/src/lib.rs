@@ -55,7 +55,7 @@ pub fn init_from_bytes(bytes: &[u8]) {
 }
 
 fn is_due(now: TimestampMillis, state: &State) -> bool {
-    state.next_due > now
+    state.next_due < now
 }
 
 fn run_internal(now: TimestampMillis, state: &mut State) -> Option<TopUpRequest> {
