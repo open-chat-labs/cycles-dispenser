@@ -38,7 +38,7 @@ pub fn run() {
     let now = utils::time::now_millis();
 
     if let Some(top_up_request) =
-        mutate_state(|state| is_due(now, state).then_some(run_internal(now, state))).flatten()
+        mutate_state(|state| is_due(now, state).then(|| run_internal(now, state))).flatten()
     {
         ic_cdk::spawn(request_top_up(top_up_request));
     };
