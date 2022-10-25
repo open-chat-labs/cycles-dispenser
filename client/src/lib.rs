@@ -3,7 +3,7 @@ use ic_cdk::api::call::CallResult;
 use serde::{Deserialize, Serialize};
 use std::collections::VecDeque;
 use std::fmt::{Debug, Formatter};
-use tracing::{error, info};
+use tracing::{error, info, trace};
 use types::{CanisterId, Cycles, Milliseconds, TimestampMillis};
 
 canister_state!(State);
@@ -17,7 +17,7 @@ struct State {
     cycles_dispenser_canister_id: CanisterId,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 struct InvocationResult {
     timestamp: TimestampMillis,
     cycles_balance: Cycles,
@@ -135,6 +135,7 @@ fn push_invocation_result(result: InvocationResult, state: &mut State) {
     while state.recent_invocations.len() >= 50 {
         state.recent_invocations.pop_front();
     }
+    trace!(?result, "CyclesDispenserClient invoked");
     state.recent_invocations.push_back(result);
 }
 
