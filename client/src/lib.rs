@@ -2,6 +2,7 @@ use canister_state_macros::canister_state;
 use ic_cdk::api::call::CallResult;
 use serde::{Deserialize, Serialize};
 use std::collections::VecDeque;
+use std::fmt::{Debug, Formatter};
 use tracing::{error, info};
 use types::{CanisterId, Cycles, Milliseconds, TimestampMillis};
 
@@ -114,9 +115,21 @@ async fn request_top_up(request: TopUpRequest) {
     })
 }
 
-#[derive(Debug)]
 struct TopUpRequest {
     timestamp: TimestampMillis,
     cycles_balance: Cycles,
     cycles_dispenser_canister_id: CanisterId,
+}
+
+impl Debug for TopUpRequest {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("TopUpRequest")
+            .field("timestamp", &self.timestamp)
+            .field("cycles_balance", &self.cycles_balance)
+            .field(
+                "cycles_dispenser_canister_id",
+                &self.cycles_dispenser_canister_id.to_string(),
+            )
+            .finish()
+    }
 }
