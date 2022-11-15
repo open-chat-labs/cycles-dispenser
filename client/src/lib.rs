@@ -44,6 +44,10 @@ pub fn run() {
     };
 }
 
+pub fn set_min_cycles_balance(cycles: Cycles) {
+    mutate_state(|state| state.min_cycles_balance = cycles);
+}
+
 pub fn serialize_to_bytes() -> Vec<u8> {
     read_state(|state| rmp_serde::to_vec_named(&state).unwrap())
 }
