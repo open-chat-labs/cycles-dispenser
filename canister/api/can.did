@@ -2,6 +2,17 @@ type CanisterId = principal;
 type Cycles = nat;
 type Milliseconds = nat64;
 
+type AddCanisterArgs =
+    record {
+        canister_id: CanisterId;
+    };
+
+type AddCanisterResponse =
+    variant {
+        Success;
+        AlreadyAdded;
+    };
+
 type RequestCyclesArgs =
     record {
         amount: opt Cycles;
@@ -27,5 +38,6 @@ type InitArgs =
     };
 
 service: (InitArgs) -> {
-    c2c_request_cycles: (RequestCyclesArgs) -> (RequestCyclesResponse)
+    add_canister: (AddCanisterArgs) -> (AddCanisterResponse);
+    c2c_request_cycles: (RequestCyclesArgs) -> (RequestCyclesResponse);
 }

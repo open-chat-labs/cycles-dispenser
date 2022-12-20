@@ -7,6 +7,7 @@ use types::{CanisterId, Cycles, Milliseconds, TimestampMillis};
 use utils::env::Environment;
 use utils::memory;
 
+mod guards;
 mod lifecycle;
 mod model;
 mod queries;
@@ -22,6 +23,10 @@ struct State {
 impl State {
     pub fn new(env: Box<dyn Environment>, data: Data) -> State {
         State { env, data }
+    }
+
+    pub fn is_caller_admin(&self) -> bool {
+        self.data.admins.contains(&self.env.caller())
     }
 
     pub fn metrics(&self) -> Metrics {

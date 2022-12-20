@@ -1,6 +1,7 @@
 use candid_gen::generate_candid_method;
 
 fn main() {
+    generate_candid_method!(cycles_dispenser, add_canister, update);
     generate_candid_method!(cycles_dispenser, c2c_request_cycles, update);
 
     candid::export_service!();

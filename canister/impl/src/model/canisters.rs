@@ -1,5 +1,6 @@
 use candid::CandidType;
 use serde::{Deserialize, Serialize};
+use std::collections::hash_map::Entry::Vacant;
 use std::collections::HashMap;
 use types::{CanisterId, Cycles, TimestampMillis};
 
@@ -24,6 +25,19 @@ impl Canisters {
                     )
                 })
                 .collect(),
+        }
+    }
+
+    pub fn add(&mut self, canister_id: CanisterId, now: TimestampMillis) -> bool {
+        if let Vacant(e) = self.canisters.entry(canister_id) {
+            e.insert(Canister {
+                added: now,
+                top_ups: Vec::new(),
+                top_up_in_progress: false,
+            });
+            true
+        } else {
+            false
         }
     }
 
