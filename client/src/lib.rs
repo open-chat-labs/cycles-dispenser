@@ -3,6 +3,7 @@ use ic_cdk::api::call::CallResult;
 use serde::{Deserialize, Serialize};
 use std::collections::VecDeque;
 use std::fmt::{Debug, Formatter};
+use std::time::Duration;
 use tracing::{error, info, trace};
 use types::{CanisterId, Cycles, Milliseconds, TimestampMillis};
 
@@ -42,6 +43,10 @@ pub fn run() {
     {
         ic_cdk::spawn(request_top_up(top_up_request));
     };
+}
+
+pub fn run_at_regular_intervals(interval: Milliseconds) {
+    ic_cdk::timer::set_timer_interval(Duration::from_millis(interval), run);
 }
 
 pub fn set_min_cycles_balance(cycles: Cycles) {
