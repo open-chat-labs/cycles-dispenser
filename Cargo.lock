@@ -281,14 +281,10 @@ dependencies = [
 name = "cycles_dispenser_client"
 version = "0.1.0"
 dependencies = [
- "canister_state_macros",
  "cycles_dispenser",
  "ic-cdk 0.6.8",
- "rmp-serde",
- "serde",
  "tracing",
  "types",
- "utils",
 ]
 
 [[package]]
