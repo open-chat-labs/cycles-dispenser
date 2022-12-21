@@ -1,168 +1,122 @@
-use canister_state_macros::canister_state;
 use ic_cdk::api::call::CallResult;
-use serde::{Deserialize, Serialize};
-use std::collections::VecDeque;
-use std::fmt::{Debug, Formatter};
+use ic_cdk::timer::TimerId;
+use std::cell::{Cell, RefCell};
 use std::time::Duration;
-use tracing::{error, info, trace};
-use types::{CanisterId, Cycles, Milliseconds, TimestampMillis};
+use tracing::{error, info};
+use types::{CanisterId, Cycles, Milliseconds};
 
-canister_state!(State);
+thread_local! {
+    static CONFIG: RefCell<Option<Config>> = RefCell::default();
+    static TIMER_ID: Cell<Option<TimerId>> = Cell::default();
+}
 
-#[derive(Serialize, Deserialize)]
-struct State {
-    min_cycles_balance: Cycles,
-    min_interval: Milliseconds,
-    next_due: TimestampMillis,
-    recent_invocations: VecDeque<InvocationResult>,
+pub struct Config {
     cycles_dispenser_canister_id: CanisterId,
+    min_cycles_balance: Cycles,
+    interval: Milliseconds,
+    on_success_callback: Box<dyn Fn(Cycles)>,
+    on_error_callback: Box<dyn Fn(String)>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
-struct InvocationResult {
-    timestamp: TimestampMillis,
-    cycles_balance: Cycles,
-    top_up_result: Option<Result<Cycles, String>>,
+impl Config {
+    pub fn new(cycles_dispenser_canister_id: CanisterId) -> Self {
+        Self {
+            cycles_dispenser_canister_id,
+            min_cycles_balance: 1_000_000_000_000, // 1T
+            interval: 60 * 1000,                   // 1 minute
+            on_success_callback: Box::new(empty_fn),
+            on_error_callback: Box::new(empty_fn),
+        }
+    }
+
+    pub fn with_min_cycles_balance(mut self, min_cycles_balance: Cycles) -> Self {
+        self.min_cycles_balance = min_cycles_balance;
+        self
+    }
+
+    pub fn with_interval(mut self, interval: Milliseconds) -> Self {
+        self.interval = interval;
+        self
+    }
+
+    pub fn on_success<F: Fn(Cycles) + 'static>(mut self, on_success: F) -> Self {
+        self.on_success_callback = Box::new(on_success);
+        self
+    }
+
+    pub fn on_error<F: Fn(String) + 'static>(mut self, on_error: F) -> Self {
+        self.on_error_callback = Box::new(on_error);
+        self
+    }
 }
 
-pub fn init(cycles_dispenser_canister_id: CanisterId, min_cycles_balance: Cycles) {
-    init_state(State {
-        min_cycles_balance,
-        min_interval: 60 * 1000, // 1 minute
-        next_due: 0,
-        recent_invocations: VecDeque::new(),
-        cycles_dispenser_canister_id,
+pub fn start(config: Config) {
+    let interval = config.interval;
+
+    CONFIG.with(|c| {
+        *c.borrow_mut() = Some(config);
+    });
+
+    let timer_id = ic_cdk::timer::set_timer_interval(Duration::from_millis(interval), run_once);
+
+    TIMER_ID.with(|t| {
+        if let Some(previous) = t.replace(Some(timer_id)) {
+            ic_cdk::timer::clear_timer(previous);
+        }
+    });
+}
+
+pub fn stop() -> bool {
+    TIMER_ID.with(|t| {
+        if let Some(timer_id) = t.take() {
+            ic_cdk::timer::clear_timer(timer_id);
+            true
+        } else {
+            false
+        }
     })
 }
 
-pub fn run() {
-    let now = utils::time::now_millis();
+fn run_once() {
+    if let Some((min_cycles_balance, cycles_dispenser_canister_id)) = CONFIG.with(|config| {
+        config
+            .borrow()
+            .as_ref()
+            .map(|c| (c.min_cycles_balance, c.cycles_dispenser_canister_id))
+    }) {
+        let cycles_balance = ic_cdk::api::canister_balance128();
 
-    if let Some(top_up_request) =
-        mutate_state(|state| is_due(now, state).then(|| run_internal(now, state))).flatten()
-    {
-        ic_cdk::spawn(request_top_up(top_up_request));
-    };
-}
-
-pub fn run_at_regular_intervals(interval: Milliseconds) {
-    ic_cdk::timer::set_timer_interval(Duration::from_millis(interval), run);
-}
-
-pub fn set_min_cycles_balance(cycles: Cycles) {
-    mutate_state(|state| state.min_cycles_balance = cycles);
-}
-
-pub fn serialize_to_bytes() -> Vec<u8> {
-    read_state(|state| rmp_serde::to_vec_named(&state).unwrap())
-}
-
-pub fn init_from_bytes(bytes: &[u8]) {
-    let state = rmp_serde::from_slice(bytes).unwrap();
-
-    init_state(state);
-}
-
-fn is_due(now: TimestampMillis, state: &State) -> bool {
-    state.next_due < now
-}
-
-fn run_internal(now: TimestampMillis, state: &mut State) -> Option<TopUpRequest> {
-    state.next_due = now + state.min_interval;
-
-    let cycles_balance = ic_cdk::api::canister_balance128();
-
-    if cycles_balance < state.min_cycles_balance {
-        Some(TopUpRequest {
-            timestamp: now,
-            cycles_balance,
-            cycles_dispenser_canister_id: state.cycles_dispenser_canister_id,
-        })
-    } else {
-        push_invocation_result(
-            InvocationResult {
-                timestamp: now,
-                cycles_balance,
-                top_up_result: None,
-            },
-            state,
-        );
-        None
+        if cycles_balance < min_cycles_balance {
+            ic_cdk::spawn(request_top_up(cycles_balance, cycles_dispenser_canister_id))
+        }
     }
 }
 
-async fn request_top_up(request: TopUpRequest) {
-    info!(?request, "Requesting cycles top up");
+async fn request_top_up(cycles_balance: Cycles, cycles_dispenser_canister_id: CanisterId) {
+    info!(cycles_balance, "Requesting cycles top up");
 
     let args = cycles_dispenser::c2c_request_cycles::Args { amount: None };
 
-    let response: CallResult<(cycles_dispenser::c2c_request_cycles::Response,)> = ic_cdk::call(
-        request.cycles_dispenser_canister_id,
-        "c2c_request_cycles",
-        (&args,),
-    )
-    .await;
+    let response: CallResult<(cycles_dispenser::c2c_request_cycles::Response,)> =
+        ic_cdk::call(cycles_dispenser_canister_id, "c2c_request_cycles", (&args,)).await;
 
-    let top_up_result = match &response {
-        Ok((result,)) => match result {
-            cycles_dispenser::c2c_request_cycles::Response::Success(cycles) => {
-                info!(cycles, "Cycles topped up successfully");
-                Ok(*cycles)
+    if let Ok(cycles_dispenser::c2c_request_cycles::Response::Success(cycles)) =
+        response.as_ref().map(|r| &r.0)
+    {
+        info!(cycles, "Cycles topped up successfully");
+        CONFIG.with(|config| {
+            if let Some(on_success) = config.borrow().as_ref().map(|c| &c.on_success_callback) {
+                (*on_success)(*cycles)
             }
-            cycles_dispenser::c2c_request_cycles::Response::Throttled(interval) => {
-                let now = utils::time::now_millis();
-
-                mutate_state(|state| {
-                    // Add 10 seconds to avoid being throttled again due to time mismatches
-                    state.next_due = now + interval + 10000;
-                });
-
-                Err(())
-            }
-            _ => Err(()),
-        },
-        _ => Err(()),
-    }
-    .map_err(|_| {
+        });
+    } else {
         error!(?response, "Cycles top up failed");
-        format!("{:?}", response)
-    });
-
-    mutate_state(|state| {
-        push_invocation_result(
-            InvocationResult {
-                timestamp: request.timestamp,
-                cycles_balance: request.cycles_balance,
-                top_up_result: Some(top_up_result),
-            },
-            state,
-        )
-    });
-}
-
-fn push_invocation_result(result: InvocationResult, state: &mut State) {
-    while state.recent_invocations.len() >= 50 {
-        state.recent_invocations.pop_front();
-    }
-    trace!(?result, "CyclesDispenserClient invoked");
-    state.recent_invocations.push_back(result);
-}
-
-struct TopUpRequest {
-    timestamp: TimestampMillis,
-    cycles_balance: Cycles,
-    cycles_dispenser_canister_id: CanisterId,
-}
-
-impl Debug for TopUpRequest {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("TopUpRequest")
-            .field("timestamp", &self.timestamp)
-            .field("cycles_balance", &self.cycles_balance)
-            .field(
-                "cycles_dispenser_canister_id",
-                &self.cycles_dispenser_canister_id.to_string(),
-            )
-            .finish()
+        CONFIG.with(|config| {
+            if let Some(on_error) = config.borrow().as_ref().map(|c| &c.on_error_callback) {
+                (*on_error)(format!("{response:?}"))
+            }
+        });
     }
 }
+
+fn empty_fn<T>(_: T) {}
