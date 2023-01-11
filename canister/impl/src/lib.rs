@@ -36,6 +36,9 @@ impl State {
             cycles_balance: self.env.cycles_balance(),
             admins: self.data.admins.iter().copied().collect(),
             canisters: self.data.canisters.metrics(),
+            max_top_up_amount: self.data.max_top_up_amount,
+            min_interval: self.data.min_interval,
+            min_cycles_balance: self.data.min_cycles_balance,
         }
     }
 }
@@ -75,4 +78,7 @@ pub struct Metrics {
     pub cycles_balance: Cycles,
     pub admins: Vec<Principal>,
     pub canisters: Vec<CanisterMetrics>,
+    pub max_top_up_amount: Cycles,
+    pub min_interval: Milliseconds,
+    pub min_cycles_balance: Cycles,
 }
