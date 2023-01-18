@@ -11,6 +11,7 @@ use utils::env::Environment;
 #[trace]
 fn init(args: Args) {
     ic_cdk::setup();
+    canister_logger::setup(false);
 
     let env = Box::new(CanisterEnv::new());
     let data = Data::new(

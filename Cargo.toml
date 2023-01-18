@@ -9,9 +9,10 @@ members = [
 ]
 
 [workspace.dependencies]
-candid = "0.8.3"
-canister_state_macros = { git = "https://github.com/open-ic/ic-utils", rev = "cfc89a86ae59ee7a12e155ddbc2df74713575071" }
-canister_tracing_macros = { git = "https://github.com/open-ic/open-chat", branch = "master" }
+candid = "0.8.4"
+canister_logger = { git = "https://github.com/open-ic/ic-utils", rev = "94a2ba9eabca288cef87070311f4ce16dd404a6c" }
+canister_state_macros = { git = "https://github.com/open-ic/ic-utils", rev = "94a2ba9eabca288cef87070311f4ce16dd404a6c" }
+canister_tracing_macros = { git = "https://github.com/open-ic/ic-utils", rev = "94a2ba9eabca288cef87070311f4ce16dd404a6c" }
 getrandom = "0.2.8"
 ic-cdk = "0.6.8"
 ic-cdk-macros = "0.6.8"
@@ -21,7 +22,7 @@ rand = "0.8.5"
 serde = "1.0.145"
 serde_bytes = "0.11.7"
 serde_json = "1.0.87"
-stable_memory = { git = "https://github.com/open-ic/ic-utils", rev = "d9c575fb4b91e1cfe80add0746eac389df33c8f7" }
+stable_memory = { git = "https://github.com/open-ic/ic-utils", rev = "94a2ba9eabca288cef87070311f4ce16dd404a6c" }
 syn = "1.0.103"
 tracing = "0.1.37"
 

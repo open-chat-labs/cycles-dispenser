@@ -11,6 +11,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 candid = { workspace = true }
+canister_logger = { workspace = true }
 canister_state_macros = { workspace = true }
 canister_tracing_macros = { workspace = true }
 cycles_dispenser = { path = "../api" }
