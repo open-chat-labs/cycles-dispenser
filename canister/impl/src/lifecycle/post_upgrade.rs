@@ -17,6 +17,7 @@ fn post_upgrade() {
     let state = State::new(env, data);
 
     init_state(state);
+    crate::jobs::start();
 
     info!("Post-upgrade complete");
 }
