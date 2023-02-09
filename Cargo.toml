@@ -10,19 +10,20 @@ members = [
 
 [workspace.dependencies]
 candid = "0.8.4"
-canister_logger = { git = "https://github.com/open-ic/ic-utils", rev = "94a2ba9eabca288cef87070311f4ce16dd404a6c" }
-canister_state_macros = { git = "https://github.com/open-ic/ic-utils", rev = "94a2ba9eabca288cef87070311f4ce16dd404a6c" }
-canister_tracing_macros = { git = "https://github.com/open-ic/ic-utils", rev = "94a2ba9eabca288cef87070311f4ce16dd404a6c" }
+canister_logger = { git = "https://github.com/open-ic/ic-utils", rev = "4bcf677f878b6cd9d2a818c5fc1c2f89ad110f8c" }
+canister_state_macros = { git = "https://github.com/open-ic/ic-utils", rev = "4bcf677f878b6cd9d2a818c5fc1c2f89ad110f8c" }
+canister_tracing_macros = { git = "https://github.com/open-ic/ic-utils", rev = "4bcf677f878b6cd9d2a818c5fc1c2f89ad110f8c" }
 getrandom = "0.2.8"
-ic-cdk = "0.6.8"
+ic-cdk = "0.7.0"
 ic-cdk-macros = "0.6.8"
-ic-ledger-types = "0.2.0"
+ic-cdk-timers = "0.1.0"
+ic-ledger-types = "0.3.0"
 quote = "1.0.21"
 rand = "0.8.5"
 serde = "1.0.145"
 serde_bytes = "0.11.7"
 serde_json = "1.0.87"
-stable_memory = { git = "https://github.com/open-ic/ic-utils", rev = "94a2ba9eabca288cef87070311f4ce16dd404a6c" }
+stable_memory = { git = "https://github.com/open-ic/ic-utils", rev = "4bcf677f878b6cd9d2a818c5fc1c2f89ad110f8c" }
 syn = "1.0.103"
 tracing = "0.1.37"
 
@@ -30,8 +31,3 @@ tracing = "0.1.37"
 lto = true
 opt-level = "z"
 codegen-units = 1
-
-[patch.crates-io]
-ic-cdk = { git = "https://github.com/hpeebles/cdk-rs", rev = "a3459daead2c7123d854c9525d971cf336c95868" }
-ic-cdk-macros = { git = "https://github.com/hpeebles/cdk-rs", rev = "a3459daead2c7123d854c9525d971cf336c95868" }
-ic-ledger-types = { git = "https://github.com/hpeebles/cdk-rs", rev = "a3459daead2c7123d854c9525d971cf336c95868" }

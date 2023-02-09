@@ -175,10 +175,11 @@ dependencies = [
 [[package]]
 name = "canister_logger"
 version = "0.1.0"
-source = "git+https://github.com/open-ic/ic-utils?rev=94a2ba9eabca288cef87070311f4ce16dd404a6c#94a2ba9eabca288cef87070311f4ce16dd404a6c"
+source = "git+https://github.com/open-ic/ic-utils?rev=4bcf677f878b6cd9d2a818c5fc1c2f89ad110f8c#4bcf677f878b6cd9d2a818c5fc1c2f89ad110f8c"
 dependencies = [
  "candid",
- "ic0 0.18.7 (registry+https://github.com/rust-lang/crates.io-index)",
+ "canister_time",
+ "ic0",
  "serde",
  "tracing",
  "tracing-attributes",
@@ -188,12 +189,20 @@ dependencies = [
 [[package]]
 name = "canister_state_macros"
 version = "0.1.0"
-source = "git+https://github.com/open-ic/ic-utils?rev=94a2ba9eabca288cef87070311f4ce16dd404a6c#94a2ba9eabca288cef87070311f4ce16dd404a6c"
+source = "git+https://github.com/open-ic/ic-utils?rev=4bcf677f878b6cd9d2a818c5fc1c2f89ad110f8c#4bcf677f878b6cd9d2a818c5fc1c2f89ad110f8c"
+
+[[package]]
+name = "canister_time"
+version = "0.1.0"
+source = "git+https://github.com/open-ic/ic-utils?rev=4bcf677f878b6cd9d2a818c5fc1c2f89ad110f8c#4bcf677f878b6cd9d2a818c5fc1c2f89ad110f8c"
+dependencies = [
+ "ic0",
+]
 
 [[package]]
 name = "canister_tracing_macros"
 version = "0.1.0"
-source = "git+https://github.com/open-ic/ic-utils?rev=94a2ba9eabca288cef87070311f4ce16dd404a6c#94a2ba9eabca288cef87070311f4ce16dd404a6c"
+source = "git+https://github.com/open-ic/ic-utils?rev=4bcf677f878b6cd9d2a818c5fc1c2f89ad110f8c#4bcf677f878b6cd9d2a818c5fc1c2f89ad110f8c"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -266,6 +275,7 @@ version = "0.1.0"
 dependencies = [
  "cycles_dispenser",
  "ic-cdk",
+ "ic-cdk-timers",
  "tracing",
  "types",
 ]
@@ -281,6 +291,7 @@ dependencies = [
  "cycles_dispenser",
  "ic-cdk",
  "ic-cdk-macros",
+ "ic-cdk-timers",
  "ic-ledger-types",
  "serde",
  "serde_bytes",
@@ -503,23 +514,22 @@ checksum = "7f24254aa9a54b5c858eaee2f5bccdb46aaf0e486a595ed5fd8f86ba55232a70"
 
 [[package]]
 name = "ic-cdk"
-version = "0.6.8"
-source = "git+https://github.com/hpeebles/cdk-rs?rev=a3459daead2c7123d854c9525d971cf336c95868#a3459daead2c7123d854c9525d971cf336c95868"
+version = "0.7.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bb6d60ecf5b27833f0fe213ed481dcb6d25219abcfd0582eb8a77b20938aae00"
 dependencies = [
  "candid",
- "cfg-if",
- "futures",
  "ic-cdk-macros",
- "ic0 0.18.7 (git+https://github.com/hpeebles/cdk-rs?rev=a3459daead2c7123d854c9525d971cf336c95868)",
+ "ic0",
  "serde",
  "serde_bytes",
- "slotmap",
 ]
 
 [[package]]
 name = "ic-cdk-macros"
 version = "0.6.8"
-source = "git+https://github.com/hpeebles/cdk-rs?rev=a3459daead2c7123d854c9525d971cf336c95868#a3459daead2c7123d854c9525d971cf336c95868"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cb423dab7c5bf19d4abccabd2ffe35e09b9dde611d478ea3afe0347b50fa727f"
 dependencies = [
  "candid",
  "proc-macro2",
@@ -530,9 +540,24 @@ dependencies = [
 ]
 
 [[package]]
+name = "ic-cdk-timers"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c400f8048f4f5ba3bd3d5fe9301b9343e8ef2e2749079af8f99d4f317ebbbb14"
+dependencies = [
+ "futures",
+ "ic-cdk",
+ "ic0",
+ "serde",
+ "serde_bytes",
+ "slotmap",
+]
+
+[[package]]
 name = "ic-ledger-types"
-version = "0.2.0"
-source = "git+https://github.com/hpeebles/cdk-rs?rev=a3459daead2c7123d854c9525d971cf336c95868#a3459daead2c7123d854c9525d971cf336c95868"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "762102ee678adfd376789ade181a560b44131ed52ce050bb5d3aa3e298132f06"
 dependencies = [
  "candid",
  "crc32fast",
@@ -545,14 +570,9 @@ dependencies = [
 
 [[package]]
 name = "ic0"
-version = "0.18.7"
+version = "0.18.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e17ec1438d667907ee275368801390f45ba0b4f6e6c2a45221e5d01199187f4f"
-
-[[package]]
-name = "ic0"
-version = "0.18.7"
-source = "git+https://github.com/hpeebles/cdk-rs?rev=a3459daead2c7123d854c9525d971cf336c95868#a3459daead2c7123d854c9525d971cf336c95868"
+checksum = "978b91fc78de9d2eb0144db717839cde3b35470199ea51aca362cb6310e93dfd"
 
 [[package]]
 name = "indexmap"
@@ -864,18 +884,18 @@ dependencies = [
 
 [[package]]
 name = "proc-macro2"
-version = "1.0.47"
+version = "1.0.51"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5ea3d908b0e36316caf9e9e2c4625cdde190a7e6f440d794667ed17a1855e725"
+checksum = "5d727cae5b39d21da60fa540906919ad737832fe0b1c165da3a34d6548c849d6"
 dependencies = [
  "unicode-ident",
 ]
 
 [[package]]
 name = "quote"
-version = "1.0.21"
+version = "1.0.23"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bbe448f377a7d6961e30f5955f9b8d106c3f5e449d493ee1b125c1d43c2b5179"
+checksum = "8856d8364d252a14d474036ea1358d63c9e6965c8e5c1885c18f73d70bff9c7b"
 dependencies = [
  "proc-macro2",
 ]
@@ -1041,7 +1061,7 @@ dependencies = [
 [[package]]
 name = "serializer"
 version = "0.1.0"
-source = "git+https://github.com/open-ic/ic-utils?rev=94a2ba9eabca288cef87070311f4ce16dd404a6c#94a2ba9eabca288cef87070311f4ce16dd404a6c"
+source = "git+https://github.com/open-ic/ic-utils?rev=4bcf677f878b6cd9d2a818c5fc1c2f89ad110f8c#4bcf677f878b6cd9d2a818c5fc1c2f89ad110f8c"
 dependencies = [
  "rmp-serde",
  "serde",
@@ -1113,7 +1133,7 @@ checksum = "a507befe795404456341dfab10cef66ead4c041f62b8b11bbb92bffe5d0953e0"
 [[package]]
 name = "stable_memory"
 version = "0.1.0"
-source = "git+https://github.com/open-ic/ic-utils?rev=94a2ba9eabca288cef87070311f4ce16dd404a6c#94a2ba9eabca288cef87070311f4ce16dd404a6c"
+source = "git+https://github.com/open-ic/ic-utils?rev=4bcf677f878b6cd9d2a818c5fc1c2f89ad110f8c#4bcf677f878b6cd9d2a818c5fc1c2f89ad110f8c"
 dependencies = [
  "ic-cdk",
  "serde",
