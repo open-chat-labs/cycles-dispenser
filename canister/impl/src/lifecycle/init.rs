@@ -11,7 +11,7 @@ use utils::env::Environment;
 #[trace]
 fn init(args: Args) {
     ic_cdk::setup();
-    canister_logger::setup(false);
+    canister_logger::init(false);
 
     let env = Box::new(CanisterEnv::new());
     let data = Data::new(
@@ -25,9 +25,9 @@ fn init(args: Args) {
         args.cycles_minting_canister,
         env.now(),
     );
-    let state = State::new(env, data);
 
-    init_state(state);
+    init_state(State::new(env, data));
+
     crate::jobs::start();
 
     info!("Initialization complete");

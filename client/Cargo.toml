@@ -7,6 +7,7 @@ edition = "2021"
 
 [dependencies]
 cycles_dispenser = { path = "../canister/api" }
-ic-cdk = { workspace = true, features = ["timers"] }
+ic-cdk = { workspace = true }
+ic-cdk-timers = { workspace = true }
 tracing = { workspace = true }
 types = { path = "../libraries/types" }

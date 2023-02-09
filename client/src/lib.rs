@@ -1,5 +1,5 @@
 use ic_cdk::api::call::CallResult;
-use ic_cdk::timer::TimerId;
+use ic_cdk_timers::TimerId;
 use std::cell::{Cell, RefCell};
 use std::time::Duration;
 use tracing::{error, info};
@@ -57,11 +57,11 @@ pub fn start(config: Config) {
         *c.borrow_mut() = Some(config);
     });
 
-    let timer_id = ic_cdk::timer::set_timer_interval(Duration::from_millis(interval), run_once);
+    let timer_id = ic_cdk_timers::set_timer_interval(Duration::from_millis(interval), run_once);
 
     TIMER_ID.with(|t| {
         if let Some(previous) = t.replace(Some(timer_id)) {
-            ic_cdk::timer::clear_timer(previous);
+            ic_cdk_timers::clear_timer(previous);
         }
     });
 }
@@ -69,7 +69,7 @@ pub fn start(config: Config) {
 pub fn stop() -> bool {
     TIMER_ID.with(|t| {
         if let Some(timer_id) = t.take() {
-            ic_cdk::timer::clear_timer(timer_id);
+            ic_cdk_timers::clear_timer(timer_id);
             true
         } else {
             false

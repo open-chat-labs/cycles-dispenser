@@ -11,17 +11,15 @@ use utils::env::canister::CanisterEnv;
 #[trace]
 fn post_upgrade() {
     ic_cdk::setup();
-    canister_logger::setup(false);
 
     let env = Box::new(CanisterEnv::new());
-    let (data, log_messages, trace_messages): (Data, Vec<LogEntry>, Vec<LogEntry>) =
+    let (data, logs, traces): (Data, Vec<LogEntry>, Vec<LogEntry>) =
         deserialize_from_stable_memory(UPGRADE_BUFFER_SIZE).unwrap();
 
-    canister_logger::prepend(log_messages, trace_messages);
+    canister_logger::init_with_logs(false, logs, traces);
 
-    let state = State::new(env, data);
+    init_state(State::new(env, data));
 
-    init_state(state);
     crate::jobs::start();
 
     info!("Post-upgrade complete");

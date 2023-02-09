@@ -12,10 +12,10 @@ fn pre_upgrade() {
 
     let state = take_state();
 
-    let log_messages = canister_logger::export_logs();
-    let trace_messages = canister_logger::export_traces();
+    let logs = canister_logger::export_logs();
+    let traces = canister_logger::export_traces();
 
-    let stable_state = (state.data, log_messages, trace_messages);
+    let stable_state = (state.data, logs, traces);
 
     serialize_to_stable_memory(stable_state, UPGRADE_BUFFER_SIZE).unwrap();
 }

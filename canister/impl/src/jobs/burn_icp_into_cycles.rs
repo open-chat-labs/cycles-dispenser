@@ -13,7 +13,7 @@ const INTERVAL: Duration = Duration::from_secs(300);
 const MEMO_TOP_UP_CANISTER: Memo = Memo(0x50555054); // == 'TPUP'
 
 pub fn start_job() {
-    ic_cdk::timer::set_timer_interval(INTERVAL, run);
+    ic_cdk_timers::set_timer_interval(INTERVAL, run);
 }
 
 fn run() {
