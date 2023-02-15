@@ -27,8 +27,8 @@ impl State {
         State { env, data }
     }
 
-    pub fn is_caller_admin(&self) -> bool {
-        self.data.admins.contains(&self.env.caller())
+    pub fn is_caller_governance_principal(&self) -> bool {
+        self.data.governance_principals.contains(&self.env.caller())
     }
 
     pub fn metrics(&self) -> Metrics {
@@ -36,7 +36,7 @@ impl State {
             memory_used: memory::used(),
             now: self.env.now(),
             cycles_balance: self.env.cycles_balance(),
-            admins: self.data.admins.iter().copied().collect(),
+            governance_principals: self.data.governance_principals.iter().copied().collect(),
             canisters: self.data.canisters.metrics(),
             max_top_up_amount: self.data.max_top_up_amount,
             min_interval: self.data.min_interval,
@@ -50,7 +50,8 @@ impl State {
 
 #[derive(Serialize, Deserialize)]
 struct Data {
-    pub admins: HashSet<Principal>,
+    #[serde(alias = "admins")]
+    pub governance_principals: HashSet<Principal>,
     pub canisters: Canisters,
     pub max_top_up_amount: Cycles,
     pub min_interval: Milliseconds,
@@ -64,7 +65,7 @@ struct Data {
 impl Data {
     #[allow(clippy::too_many_arguments)]
     pub fn new(
-        admins: Vec<Principal>,
+        governance_principals: Vec<Principal>,
         canisters: Vec<CanisterId>,
         max_top_up_amount: Cycles,
         min_interval: Milliseconds,
@@ -75,7 +76,7 @@ impl Data {
         now: TimestampMillis,
     ) -> Data {
         Data {
-            admins: admins.into_iter().collect(),
+            governance_principals: governance_principals.into_iter().collect(),
             canisters: Canisters::new(canisters, now),
             max_top_up_amount,
             min_interval,
@@ -93,7 +94,7 @@ pub struct Metrics {
     pub now: TimestampMillis,
     pub memory_used: u64,
     pub cycles_balance: Cycles,
-    pub admins: Vec<Principal>,
+    pub governance_principals: Vec<Principal>,
     pub canisters: Vec<CanisterMetrics>,
     pub max_top_up_amount: Cycles,
     pub min_interval: Milliseconds,

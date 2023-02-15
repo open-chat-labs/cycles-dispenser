@@ -1,10 +1,10 @@
-use crate::guards::caller_is_admin;
+use crate::guards::caller_is_governance_principal;
 use crate::{mutate_state, State};
 use canister_tracing_macros::trace;
 use cycles_dispenser::add_canister::{Response::*, *};
 use ic_cdk_macros::update;
 
-#[update(guard = "caller_is_admin")]
+#[update(guard = "caller_is_governance_principal")]
 #[trace]
 fn add_canister(args: Args) -> Response {
     mutate_state(|state| add_canister_impl(args, state))
